@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .form-container {
+            width: 400px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-container h2 {
+            text-align: center;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-top: -5px;
+            margin-bottom: 10px;
+        }
+
+        .non-field-errors {
+            color: red;
+            margin-bottom: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .message {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background-color: #4caf50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+            display: none;
+        }
+
+        .message.error {
+            background-color: #f44336;
+        }
+
+        .logout-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background-color: #e53935;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-container">
+        <h2>Booking Form</h2>
+
+        <!-- Display Messages -->
+        {% if messages %}
+        <div id="message-container">
+            {% for message in messages %}
+            <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <!-- Non-field errors -->
+            {% if form.non_field_errors %}
+            <div class="non-field-errors">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+
+            <label for="booking_date">Booking Date</label>
+            <input type="date" id="booking_date" name="booking_date" value="{{ form.booking_date.value|default:'' }}"
+                required>
+            {% if form.booking_date.errors %}
+            <div class="error">
+                {{ form.booking_date.errors.0 }}
+            </div>
+            {% endif %}
+
+            <label for="booking_type">Booking Type</label>
+            <select id="booking_type" name="booking_type" required>
+                <option value="">-- Select Booking Type --</option>
+                <option value="FULL-DAY">Full-Day</option>
+                <option value="HALF-DAY">Half-Day</option>
+                <option value="CUSTOM">Custom</option>
+            </select>
+            {% if form.booking_type.errors %}
+            <div class="error">
+                {{ form.booking_type.errors.0 }}
+            </div>
+            {% endif %}
+
+            <div id="slot-container" class="hidden">
+                <label for="booking_slot">Booking Slot</label>
+                <select id="booking_slot" name="booking_slot">
+                    <option value="">-- Select Slot --</option>
+                    <option value="FIRST-HALF">First Half</option>
+                    <option value="SECOND-HALF">Second Half</option>
+                </select>
+                {% if form.booking_slot.errors %}
+                <div class="error">
+                    {{ form.booking_slot.errors.0 }}
+                </div>
+                {% endif %}
+            </div>
+
+            <div id="custom-time-container" class="hidden">
+                <label for="booking_from">Booking From</label>
+                <input type="time" id="booking_from" name="booking_from"
+                    value="{{ form.booking_from.value|default:'' }}">
+                {% if form.booking_from.errors %}
+                <div class="error">
+                    {{ form.booking_from.errors.0 }}
+                </div>
+                {% endif %}
+
+                <label for="booking_to">Booking To</label>
+                <input type="time" id="booking_to" name="booking_to" value="{{ form.booking_to.value|default:'' }}">
+                {% if form.booking_to.errors %}
+                <div class="error">
+                    {{ form.booking_to.errors.0 }}
+                </div>
+                {% endif %}
+            </div>
+
+            <button type="submit">Submit</button>
+        </form>
+
+        <!-- Logout Button -->
+        <form action="{% url 'logout' %}" method="POST">
+            {% csrf_token %}
+            <button class="logout-btn" type="submit">Logout</button>
+        </form>
+    </div>
+
+    <script>
+        const bookingType = document.getElementById("booking_type");
+        const slotContainer = document.getElementById("slot-container");
+        const customTimeContainer = document.getElementById("custom-time-container");
+
+        bookingType.addEventListener("change", function () {
+            const selectedType = this.value;
+
+            if (selectedType === "HALF-DAY") {
+                slotContainer.classList.remove("hidden");
+                customTimeContainer.classList.add("hidden");
+            } else if (selectedType === "CUSTOM") {
+                slotContainer.classList.add("hidden");
+                customTimeContainer.classList.remove("hidden");
+            } else {
+                slotContainer.classList.add("hidden");
+                customTimeContainer.classList.add("hidden");
+            }
+        });
+
+        // Show messages dynamically
+        document.addEventListener("DOMContentLoaded", () => {
+            const messages = document.querySelectorAll(".message");
+            messages.forEach(message => {
+                message.style.display = "block";
+                setTimeout(() => {
+                    message.style.display = "none";
+                }, 3000); // Hide after 3 seconds
+            });
+        });
+    </script>
+</body>
+
+</html>

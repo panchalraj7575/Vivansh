@@ -1,0 +1,45 @@
+Task Description:
+
+1. Setup Django and MySQL Database  
+   - Install the latest version of Django.  
+   - Create and set up a fresh MySQL database for the project.  
+
+---
+
+# Basic Authentication Flow  
+
+1. Implement Sign-Up and Login functionality.  
+2. Sign-Up Page Fields:  
+   - First Name  
+   - Last Name  
+   - Email  
+   - Password  
+3. Ensure that duplicate email addresses are not allowed during registration.  
+
+---
+
+# Booking System  
+
+1. After logging in, users will see a booking form.  
+2. Booking Form Fields:  
+   - Customer Name  
+   - Customer Email  
+   - Booking Date  
+   - Booking Type (Dropdown: Full-Day, Half-Day, Custom)  
+   - Booking Slot (Dropdown: First Half, Second Half – visible only if the Booking Type is Half-Day)  
+   - Booking From and To Time (Time Picker – visible only if the Booking Type is Custom)  
+
+3. Booking Rules:  
+   - Duplicate bookings are not allowed.  
+   - Examples of Rules:  
+     1. If a Full-Day booking is made for 20th Dec 2021, no other bookings are allowed on that day.  
+     2. If a Half-Day booking is made for 20th Dec 2021 (e.g., First Half), the following are not allowed:  
+        - A Full-Day booking for the same day.  
+        - A custom booking at any morning time.  
+     3. If a Custom booking is made for 20th Dec 2021 (e.g., from 10 AM to 11 AM), the following are not allowed:  
+        - A Full-Day booking for the same day.  
+        - A Half-Day booking with the First Half.  
+
+---
+
+Please make sure that the system follows these requirements and rules. Looking forward to your implementation!
